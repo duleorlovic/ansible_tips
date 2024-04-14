@@ -1,0 +1,70 @@
+# run with:
+# export ANSIBLE_INVENTORY=~/web-tips/ansible_tips/sample/inventory.yml
+# ansible-playbook playbook.yaml
+
+- name: My first play
+  # hosts: virtualmachines
+  hosts: 127.0.0.1
+  vars_prompt:
+
+    - name: username
+      prompt: What is your username?
+      private: false
+
+    - name: password
+      prompt: What is your password?
+  tasks:
+    - name: Ping
+      ansible.builtin.ping:
+
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello world
+
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: 'Logging in as {{ username }}/{{ password }}'
+      tags: debug
+
+    - name: Postgresql is latest
+      ansible.builtin.apt:
+        name: postgresql
+        state: latest
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: hostname to file
+      ansible.builtin.template:
+        src: templates/test.j2
+        dest: test.txt
+
+    - name: cat test.txt
+      ansible.builtin.shell: cat test.txt
+      register: file_contents
+
+    - name: print test.txt
+      ansible.builtin.debug:
+        var: file_contents.stdout
+
+    - debug:
+        msg: "This will success on vm02"
+      when: file_contents.stdout is search("My name is vm02")
+
+    - debug:
+        msg: "This is ubuntu"
+      when: ansible_facts["os_family"] == "Debian"
+      debugger: on_skipped
+
+    - name: Set variable
+      set_fact:
+        my_var: foo
+        my_list: [1, 2 , 3]
+        my_dict: {my_key: my_value}
+
+    - debug:
+        msg: my_var is {{my_var}} my_list is {{my_list[0]}} and my_dict {{my_dict.my_key}}
+
+    - debug:
+        var: my_list
+
+    - debug:
+        var: my_dict.my_key
