@@ -1,0 +1,50 @@
+---
+# https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/deployment-guides/ansible/
+- hosts: all
+  become: yes
+  # Import tunnel variables into the VM.
+  vars_files:
+    - ./tf_ansible_vars_file.yml
+  # Execute the following commands on the VM.
+  tasks:
+    - name: Download the cloudflared Linux package.
+      shell: wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+    - name: Depackage cloudflared.
+      shell: sudo dpkg -i cloudflared-linux-amd64.deb
+    - name: Create a cloudflared service directory.
+      shell: mkdir -p /etc/cloudflared/
+    - name: Create the config file for cloudflared and define the ingress rules for the tunnel.
+      copy:
+        dest: "/etc/cloudflared/config.yml"
+        content: |
+          tunnel: "{{ tunnel_id }}"
+          credentials-file: /etc/cloudflared/cert.json
+          logfile: /var/log/cloudflared.log
+          loglevel: info
+          ingress:
+            - hostname: "ssh_app.{{ zone }}"
+              service: ssh://localhost:22
+            - hostname: "web_app.{{ zone }}"
+              service: http://localhost:80
+            - hostname: "test_app.{{ zone }}"
+              service: hello_world
+            - service: http_status:404
+    - name: Create the tunnel credentials file for cloudflared.
+      copy:
+        dest: "/etc/cloudflared/cert.json"
+        content: |
+          {
+            "AccountTag"   : "{{ account | quote }}",
+            "TunnelID"     : "{{ tunnel_id | quote }}",
+            "TunnelName"   : "{{ tunnel_name | quote }}",
+            "TunnelSecret" : "{{ secret | quote }}"
+          }
+    - name: Install the tunnel as a systemd service.
+      shell: cloudflared service install
+      ignore_errors: yes
+    - name: Start the tunnel.
+      systemd:
+        name: cloudflared
+        state: started
+        enabled: true
+        masked: no

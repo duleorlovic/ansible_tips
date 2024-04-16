@@ -845,5 +845,5 @@ TODO: https://github.com/yaegassy/coc-ansible
 
 # Deploy Cloudflared tunnel
 
-https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/deployment-guides/ansible/
 
+cloudflared_tunnel_tf
