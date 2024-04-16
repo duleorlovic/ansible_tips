@@ -1,8 +1,8 @@
 resource "lxd_instance" "container1" {
-  name  = "container1"
+  name  = var.lxd_container_name
   image = "ubuntu-daily:22.04"
   # TF_VAR_created_by=$(whoami)@$(hostname):$(pwd)" terraform plan
-  description = "created_by ${var.created_by}"
+  # description = "created_by ${var.created_by}"
 
   config = {
     "boot.autostart" = true

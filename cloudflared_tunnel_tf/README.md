@@ -13,9 +13,15 @@ cloudflare_zone_id        = "asd..."
 cloudflare_account_id     = "asd..."
 cloudflare_email          = "email@..."
 cloudflare_token          = "asd..."
+
+# this is also used for dns, so use only alphanumeric and hyphens: my-app.trk.in.rs and ssh-my-app.trk.in.rs
+lxd_container_name        = "my-app"
 ```
 
+Run terraform
 ```
+rerraform init
+TF_VAR_created_by="$(whoami)@$(hostname):$(pwd)" terraform plan
 TF_VAR_created_by="$(whoami)@$(hostname):$(pwd)" terraform apply -auto-approve
 ```
 

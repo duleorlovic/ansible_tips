@@ -28,6 +28,11 @@ variable "cloudflare_token" {
 }
 
 # lxc variables
+variable "lxd_container_name" {
+  type          = string
+  description   = "Name of the container"
+}
+
 variable "created_by" {
     type        = string
     description = <<-HERE_DOC

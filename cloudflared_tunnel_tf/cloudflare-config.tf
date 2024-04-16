@@ -8,14 +8,14 @@ resource "random_password" "tunnel_secret" {
 # Creates a new locally-managed tunnel for the VM.
 resource "cloudflare_tunnel" "auto_tunnel" {
   account_id = var.cloudflare_account_id
-  name       = "Ansible tunnel"
+  name       = var.lxd_container_name
   secret     = base64sha256(random_password.tunnel_secret.result)
 }
 
 # Creates the CNAME record that routes ssh_app.${var.cloudflare_zone} to the tunnel.
 resource "cloudflare_record" "ssh_app" {
   zone_id = var.cloudflare_zone_id
-  name    = "ssh_app"
+  name    = "ssh_${var.lxd_container_name}"
   value   = "${cloudflare_tunnel.auto_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   proxied = true
@@ -23,15 +23,7 @@ resource "cloudflare_record" "ssh_app" {
 
 resource "cloudflare_record" "web_app" {
   zone_id = var.cloudflare_zone_id
-  name    = "web_app"
-  value   = "${cloudflare_tunnel.auto_tunnel.id}.cfargotunnel.com"
-  type    = "CNAME"
-  proxied = true
-}
-
-resource "cloudflare_record" "test_app" {
-  zone_id = var.cloudflare_zone_id
-  name    = "test_app"
+  name    = var.lxd_container_name
   value   = "${cloudflare_tunnel.auto_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   proxied = true
