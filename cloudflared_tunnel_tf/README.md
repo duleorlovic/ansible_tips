@@ -14,7 +14,8 @@ cloudflare_account_id     = "asd..."
 cloudflare_email          = "email@..."
 cloudflare_token          = "asd..."
 
-# this is also used for dns, so use only alphanumeric and hyphens: my-app.trk.in.rs and ssh-my-app.trk.in.rs
+# this is also used for dns and tunnel ingress hostname so use only alphanumeric
+# and hyphens, for my-app it will be my-app.trk.in.rs and ssh-my-app.trk.in.rs
 lxd_container_name        = "my-app"
 ```
 
@@ -27,7 +28,7 @@ TF_VAR_created_by="$(whoami)@$(hostname):$(pwd)" terraform apply -auto-approve
 
 Test connection from lxd host
 ```
-ssh ubuntu@"$(get_container_ip container1)" cat .ssh/authorized_keys
+ssh ubuntu@"$(get_container_ip my-app)" cat .ssh/authorized_keys
 ```
 
 From machine you want to ssh you need to install `brew install cloudflared` tool
@@ -35,11 +36,19 @@ and configure ssh to use it
 ```
 # .ssh/config
 # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/use-cases/ssh/
-Host ssh_app.trk.in.rs
+Host ssh-my-app.trk.in.rs
   ProxyCommand /home/linuxbrew/.linuxbrew/bin/cloudflared access ssh --hostname %h
 ```
 
 and connect with
 ```
-ssh ubuntu@ssh_app.trk.in.rs
+ssh ubuntu@ssh-my-app.trk.in.rs
+```
+
+Debug with
+```
+lxc shell my-app
+service cloudflared start
+systemctl status cloudflared
+tail /var/log/cloudflared.log
 ```

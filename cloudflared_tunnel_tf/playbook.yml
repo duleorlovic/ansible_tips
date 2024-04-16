@@ -22,12 +22,10 @@
           logfile: /var/log/cloudflared.log
           loglevel: info
           ingress:
-            - hostname: "ssh_app.{{ zone }}"
+            - hostname: "ssh-{{ tunnel_name }}.{{ zone }}"
               service: ssh://localhost:22
-            - hostname: "web_app.{{ zone }}"
+            - hostname: "{{ tunnel_name }}.{{ zone }}"
               service: http://localhost:80
-            - hostname: "test_app.{{ zone }}"
-              service: hello_world
             - service: http_status:404
     - name: Create the tunnel credentials file for cloudflared.
       copy:

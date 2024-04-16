@@ -41,8 +41,13 @@ ansible -i inventory.yml all --list-hosts
 # ah hock commands using modules
 ansible -i inventory.yml all -m ping
 
-# you can overwrite inventory or config file
+# you can overwrite inventory
 export ANSIBLE_INVENTORY=~/web-tips/ansible_tips/sample/inventory.yml
+# or config file
+# .ansible.cfg
+[defaults]
+inventory = ~/web-tips/ansible_tips/sample/inventory.yml
+# so following command is using env or config so it does not need params
 ansible all -m ping
 
 # default module "command" so you do not need to write "-m command"
@@ -118,6 +123,8 @@ host_key_checking = False
 or environment variable
 ```
 export ANSIBLE_HOST_KEY_CHECKING=False
+# or
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook
 ```
 
 For access over ssh as root you need to enabled on target machine

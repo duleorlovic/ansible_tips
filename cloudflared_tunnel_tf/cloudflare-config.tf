@@ -12,10 +12,10 @@ resource "cloudflare_tunnel" "auto_tunnel" {
   secret     = base64sha256(random_password.tunnel_secret.result)
 }
 
-# Creates the CNAME record that routes ssh_app.${var.cloudflare_zone} to the tunnel.
+# Creates the CNAME record that routes ss-${var.lxd_container_name}.${var.cloudflare_zone} to the tunnel.
 resource "cloudflare_record" "ssh_app" {
   zone_id = var.cloudflare_zone_id
-  name    = "ssh_${var.lxd_container_name}"
+  name    = "ssh-${var.lxd_container_name}"
   value   = "${cloudflare_tunnel.auto_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   proxied = true
