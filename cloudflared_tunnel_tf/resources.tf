@@ -1,7 +1,6 @@
-resource "lxd_instance" "container1" {
+resource "lxd_instance" "instance1" {
   name  = var.lxd_container_name
   image = "ubuntu-daily:22.04"
-  # TF_VAR_created_by=$(whoami)@$(hostname):$(pwd)" terraform plan
   description = "created_by ${var.created_by}"
 
   config = {
@@ -14,6 +13,7 @@ users:
     groups: sudo
     ssh_authorized_keys:
       - ${file("~/.ssh/id_rsa.pub")}
+      - ${fileexists(var.public_key_file) ? file(var.public_key_file) : ""}
 package_update: true
 packages:
   - git
@@ -40,4 +40,10 @@ EOF
   depends_on = [
     local_file.tf_ansible_vars_file
   ]
+}
+
+output "ansible_playbook_command" {
+  value = <<-HERE_DOC
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu  -i ${lxd_instance.instance1.ipv4_address}, playbook.yml
+  HERE_DOC
 }

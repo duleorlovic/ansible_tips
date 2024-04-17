@@ -33,6 +33,12 @@ variable "lxd_container_name" {
   description   = "Name of the container"
 }
 
+variable "public_key_file" {
+   type        = string
+   description = "Path to the public SSH key file. Generate with: ssh-keygen -f my-key"
+   default     = "my-key.pub"  # Default as empty string indicates that only local ~/.ssh/id_rsa.pub will be added
+}
+
 variable "created_by" {
     type        = string
     description = <<-HERE_DOC

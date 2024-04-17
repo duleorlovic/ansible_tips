@@ -5,3 +5,5 @@ terraform.tfstate.backup
 
 
 tf_ansible_vars_file.yml
+my-key.pub
+my-key

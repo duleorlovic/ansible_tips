@@ -3,6 +3,14 @@
 Based on
 https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/deployment-guides/ansible/
 
+On LXC machine create a folder
+```
+ssh lxd-mashine
+mkdir lxc
+cd lxc
+git clone git@github.com:duleorlovic/ansible_tips.git my-app
+cd my-app/cloudflared_tunnel_tf
+```
 
 Create `terraform.tfvars`
 ```
@@ -31,6 +39,21 @@ Test connection from lxd host
 ssh ubuntu@"$(get_container_ip my-app)" cat .ssh/authorized_keys
 ```
 
+
+Debug tunnel with
+```
+lxc shell my-app
+service cloudflared start
+systemctl status cloudflared
+tail /var/log/cloudflared.log
+```
+Debug ansible with
+```
+terraform output ansible_playbook_command
+```
+
+## Test connection from remote machine
+
 From machine you want to ssh you need to install `brew install cloudflared` tool
 and configure ssh to use it
 ```
@@ -39,16 +62,36 @@ and configure ssh to use it
 Host ssh-my-app.trk.in.rs
   ProxyCommand /home/linuxbrew/.linuxbrew/bin/cloudflared access ssh --hostname %h
 ```
+In your project create deploy folder
+```
+mkdir deploy
+cd deploy
+```
+download keys
+```
+scp lxd-mashine:lxc/my-app/cloudflared_tunnel_tf/my-key.pub  .
+scp lxd-mashine:lxc/my-app/cloudflared_tunnel_tf/my-key  .
+
+ssh-add my-key
+```
 
 and connect with
 ```
 ssh ubuntu@ssh-my-app.trk.in.rs
 ```
 
-Debug with
+Create ansible files
 ```
-lxc shell my-app
-service cloudflared start
-systemctl status cloudflared
-tail /var/log/cloudflared.log
+# inventory
+[default]
+ssh-my-app.trk.in.rs ansible_user=ubuntu
+
+# .ansible.cfg
+[defaults]
+inventory = inventory
 ```
+and test connection
+```
+```
+
+## Deploy app using ansible from remote machine
