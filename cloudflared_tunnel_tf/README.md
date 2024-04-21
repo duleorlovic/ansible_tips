@@ -66,6 +66,10 @@ In your project create deploy folder
 ```
 mkdir deploy
 cd deploy
+cat > .gitignore << HERE_DOC
+my-key
+my-key.pub
+HERE_DOC
 ```
 download keys
 ```
@@ -86,12 +90,13 @@ Create ansible files
 [default]
 ssh-my-app.trk.in.rs ansible_user=ubuntu
 
-# .ansible.cfg
+# ansible.cfg
 [defaults]
 inventory = inventory
 ```
 and test connection
 ```
+ansible all -m ping
 ```
 
 ## Deploy app using ansible from remote machine

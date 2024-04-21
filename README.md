@@ -1,5 +1,9 @@
 # Ansible tips
 
+Ansible is a nice tools since it does not store the state anywhere, instead, it
+uses a gather facts step before deploying so it will skip the step if not
+needed (changed = 0)
+
 https://docs.ansible.com/ansible/latest/getting_started/index.html
 
 Inventory file can be in `INI` (text) or `YAML` format.
@@ -44,7 +48,7 @@ ansible -i inventory.yml all -m ping
 # you can overwrite inventory
 export ANSIBLE_INVENTORY=~/web-tips/ansible_tips/sample/inventory.yml
 # or config file
-# .ansible.cfg
+# ansible.cfg
 [defaults]
 inventory = ~/web-tips/ansible_tips/sample/inventory.yml
 # so following command is using env or config so it does not need params
@@ -113,9 +117,9 @@ https://docs.ansible.com/ansible/latest/community/other_tools_and_programs.html#
 
 ## Host key check
 
-When server is reinstalled whan known_hosts will not have the key so it will
+When server is reinstalled than known_hosts will not have the key so it will
 prompt for confirmation of the new key. You can disable this check in
-`/etc/ansible/ansible.cfg` or `~/.ansible.cfg`
+`/etc/ansible/ansible.cfg` or `~/ansible.cfg` or `my-app/ansible.cfg`
 ```
 [defaults]
 host_key_checking = False
@@ -168,6 +172,8 @@ ansible all -m ansible.builtin.file -a "path=./playbook.yaml state=absent"
 # install package, use root user or ask for pass
 ansible all -m ansible.builtin.apt -a "name=vim state=latest" -u root
 ansible all -m ansible.builtin.apt -a "name=vim state=latest" --become --ask-become-pass
+# remote package
+ansible all -m ansible.builtin.apt -a "name=vim state=absent" -u root
 
 # create user
 ansible all -m ansible.builtin.user -a "name=foo password=pass"
