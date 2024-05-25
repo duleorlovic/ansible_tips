@@ -16,6 +16,10 @@ Create `terraform.tfvars`
 ```
 # terraform.tfvars
 # https://developers.cloudflare.com/fundamentals/api/get-started/create-token/ with Cloudflare Tunnel and DNS permissions.
+# My Profile > Api Tokens > Permissions >
+#   Account: Cloudflare Tunnel: Edit
+#   Zone: DNS: Edit
+# you can filter limit specific resources if needed
 cloudflare_zone           = "trk.in.rs"
 cloudflare_zone_id        = "asd..."
 cloudflare_account_id     = "asd..."
